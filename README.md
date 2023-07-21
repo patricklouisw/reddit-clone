@@ -19,7 +19,9 @@ Setup:
 5. Node.js
 
 6. PostgreSQL
-- Library Install: `yarn add @mikro-orm/postgresql pg`
+- Library Installed to connect mikroORM and postsql: `yarn add @mikro-orm/postgresql pg`
+- Local installation of Postgresql `https://postgresapp.com/`
+
 
 7. MikroORM/TypeORM
 `MikroORM`: Help with interaction with database
