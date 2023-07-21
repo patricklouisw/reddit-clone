@@ -15,6 +15,8 @@ Setup:
 3. GraphQL
 
 4. URQL / Apollo
+@Query is for getting data
+@Mutation is for Inserting, Updating or mutating data
 
 5. Node.js
 
