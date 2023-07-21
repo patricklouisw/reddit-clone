@@ -17,13 +17,13 @@ Setup:
 4. URQL / Apollo
 @Query is for getting data
 @Mutation is for Inserting, Updating or mutating data
+For practical sample: check resolvers/post.ts
 
 5. Node.js
 
 6. PostgreSQL
 - Library Installed to connect mikroORM and postsql: `yarn add @mikro-orm/postgresql pg`
 - Local installation of Postgresql `https://postgresapp.com/`
-
 
 7. MikroORM/TypeORM
 `MikroORM`: Help with interaction with database
@@ -34,10 +34,16 @@ Access to MikroORM CLI is based on mikro-orm.config.ts
 The MikroORM flow:
     a. Connect to db
     b. Run Migrations
-    c. Run Any other sql queryies
+    c. Run Any other sql queries
+
+Migration: migrate data and schema from MikroORM to database
 
 8. Redis
 
 9. Next.js
 
 10. TypeGraphQL
+
+11. Hashing of password is used with Argon2 instead of bcrypt
+Reasoning: https://security.stackexchange.com/questions/193351/in-2018-what-is-the-recommended-hash-to-store-passwords-bcrypt-scrypt-argon2 
+
