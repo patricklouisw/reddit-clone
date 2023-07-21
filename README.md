@@ -27,6 +27,13 @@ Setup:
 `MikroORM`: Help with interaction with database
 - Library Install: `yarn add @mikro-orm/cli @mikro-orm/core @mikro-orm/migrations`
 
+Access to MikroORM CLI is based on mikro-orm.config.ts
+
+The MikroORM flow:
+    a. Connect to db
+    b. Run Migrations
+    c. Run Any other sql queryies
+
 8. Redis
 
 9. Next.js
