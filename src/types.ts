@@ -1,7 +1,8 @@
 import { EntityManager, Connection, IDatabaseDriver } from "@mikro-orm/core"
-
-type NewType = IDatabaseDriver<Connection>
+import { Request, Response } from "express";
 
 export type MyContext = {
- em: EntityManager<any> & EntityManager<NewType>
+ em: EntityManager<any> & EntityManager<IDatabaseDriver<Connection>>;
+ req: Request;
+ res: Response;
 }

@@ -12,6 +12,18 @@ import { buildSchema } from "type-graphql";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+// Redis
+import RedisStore from "connect-redis"
+import session from "express-session"
+import {createClient} from "redis"
+import { MyContext } from "./types";
+
+// Augment express-session with a custom SessionData object
+declare module "express-session" {
+    interface SessionData {
+      userId: number;
+    }
+  }
 
 /* 
 == FLOW & EXPLANATION ==
@@ -29,16 +41,53 @@ const main = async () => {
     await orm.getMigrator().up(); // 2.
 
     const app = express(); // 3
+    // Apollo server didn't detect cookie solution: 
+    // https://community.apollographql.com/t/allow-cookies-to-be-sent-alongside-request/920/17
+    // app.set("trust proxy", __prod__);
+    app.set("trust proxy", true);
+    app.set("Access-Control-Allow-Origin", "https://studio.apollographql.com");
+    app.set("Access-Control-Allow-Credentials", true);
+
+    // Initialize Redis client.
+    const redisClient = createClient()
+    redisClient.connect().catch(console.error)
+
+    // Initialize Redis store.
+    const redisStore = new (RedisStore as any)({
+        client: redisClient as any,
+        disableTouch:true
+        })
+
+    // Initialize sesssion storage.
+    app.use(
+        session({
+            name: 'qid',
+            store: redisStore,
+            cookie: {
+                maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 year
+                httpOnly: true,
+                sameSite: "none",
+                // secure: __prod__, 
+                secure: true, // if true, studio works, postman doesn't; if false its the other way around
+            },
+            resave: false, // required: force lightweight session keep alive (touch)
+            saveUninitialized: false, // recommended: only save session when data exists
+            secret: "asdfasdfasdf",
+        })
+    )
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [HelloResolver, PostResolver, UserResolver],
             validate: false
         }),
-        context: () => ({em: emFork}) // Accessible by all resolvers
+        context: ({req, res}): MyContext => ({em: emFork, req, res}) // Accessible by all resolvers
     })
     await apolloServer.start();
-    apolloServer.applyMiddleware({app}) // 4.
+
+    const cors = { credentials: true, origin: 'https://studio.apollographql.com' }
+    apolloServer.applyMiddleware({ app, cors }) 
+    // apolloServer.applyMiddleware({app, }) // 4.
 
     app.listen(4000, ()=> {
         console.log("server started on localhost:4000");

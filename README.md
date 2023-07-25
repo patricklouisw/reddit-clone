@@ -47,3 +47,17 @@ Migration: migrate data and schema from MikroORM to database
 11. Hashing of password is used with Argon2 instead of bcrypt
 Reasoning: https://security.stackexchange.com/questions/193351/in-2018-what-is-the-recommended-hash-to-store-passwords-bcrypt-scrypt-argon2 
 
+
+
+Express session:
+- Store cookies (or data) on client's browser side for our server
+- We choose to store the data in redis
+
+
+How sessions work?
+1. Storing some data to redis `req.session.userid = user.id`
+    Redis is a key-value store (Sample: `sess:asdfasdfasdf -> {userId: 1}`)
+
+2. Express-session will set a cookie on client's browser with a signed key `sess:asdfasdfasdf`
+3. When User makes a request, `sess:asdfasdfasdf` is sent to the server where the server will look up redis store and get the value
+4. on the server, it decrypt the cookie using the secret set before to get the value back from Redis
